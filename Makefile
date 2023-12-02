@@ -83,9 +83,9 @@ install: $(PIP_SYNC_PATH) requirements.txt $(REQS) ## Install requirements (defa
 	@echo "Installing $(filter-out $<,$^)"
 	@python -m piptools sync requirements.txt $(REQS)
 
-inputs/day_%.txt: $(COOKIEFILE)
+inputs/day_%.txt: $(COOKIEFILE) src/day_%.py
 	echo $@
-	curl -H 'User-Agent: Makefile - curl : bengosney@googlemail.com' --cookie "$(shell cat $^)" -s -L -o $@ https://adventofcode.com/2018/day/$(shell echo "$@" | egrep -o "[0-9]+" | sed 's/^0*//')/input
+	curl -H 'User-Agent: Makefile - curl : bengosney@googlemail.com' --cookie "$(shell cat $<)" -s -L -o $@ https://adventofcode.com/2018/day/$(shell echo "$@" | egrep -o "[0-9]+" | sed 's/^0*//')/input
 
 src/day_%.py:
 	cp template.py.template $@
@@ -102,7 +102,7 @@ test: pytest mypy
 	@$(MAKE) install
 	@touch $@
 
-go: .install.state $(CURRENT_PY) $(CURRENT_INPUT) ## Setup current day and start runing test monitor
+go: .install.state ## Start runing test monitor
 	ptw --runner "pytest --testmon" --onfail "notify-send \"Failed\"" --onpass "notify-send \"Passed\"" src/*.py
 
 today: .install.state $(CURRENT_PY) $(CURRENT_INPUT) ## Setup current day and start runing test monitor
@@ -110,6 +110,3 @@ today: .install.state $(CURRENT_PY) $(CURRENT_INPUT) ## Setup current day and st
 
 bob_%:
 	echo "making $@"
-
-day_%: inputs/day_%.txt src/day_%.py ## Grab the files for the given day and start the test monitor
-	ptw --runner "pytest --testmon" --onfail "notify-send \"Failed\"" --onpass "notify-send \"Passed\"" src/$@.py || true
