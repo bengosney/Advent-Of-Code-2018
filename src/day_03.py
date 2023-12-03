@@ -1,6 +1,7 @@
 # Standard Library
 import re
 from collections import defaultdict
+from itertools import product
 
 # First Party
 from utils import no_input_skip, read_input
@@ -10,10 +11,9 @@ def part_1(input: str) -> int:
     regex = re.compile(r"#(\d+) @ (\d+),(\d+): (\d+)x(\d+)")
     cloth = defaultdict(int)
     for line in input.splitlines():
-        match = regex.search(line) or re.Match()
-        _, l, t, w, h = map(int, match.groups())
-        for x in range(l, l + w):
-            for y in range(t, t + h):
+        if (match := regex.search(line)) is not None:
+            _, l, t, w, h = map(int, match.groups())
+            for x, y in product(range(l, l + w), range(t, t + h)):
                 cloth[x, y] += 1
 
     return sum(1 for c in cloth.values() if c > 1)
