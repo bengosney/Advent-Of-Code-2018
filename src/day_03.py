@@ -18,7 +18,7 @@ def make_patterns(input: str) -> Iterable[Pattern]:
 
 
 def layout_patterns(patterns: Iterable[Pattern]) -> dict[tuple[int, int], int]:
-    cloth = defaultdict(int)
+    cloth: dict[tuple[int, int], int] = defaultdict(int)
     for _, x, y, w, h in patterns:
         for pos in product(range(x, x + w), range(y, y + h)):
             cloth[pos] += 1
