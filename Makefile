@@ -1,6 +1,6 @@
 .PHONY: help clean test install all init dev
 .DEFAULT_GOAL := install
-.PRECIOUS: requirements.%.in
+.PRECIOUS: requirements.%.in inputs/day_%.txt src/day_%.py
 
 HOOKS=$(.git/hooks/pre-commit)
 REQS=$(wildcard requirements.*.txt)
@@ -108,5 +108,5 @@ go: .install.state ## Start runing test monitor
 today: .install.state $(CURRENT_PY) $(CURRENT_INPUT) ## Setup current day and start runing test monitor
 	ptw --runner "pytest --testmon" --onfail "notify-send \"Failed\"" --onpass "notify-send \"Passed\"" $(CURRENT_PY)
 
-bob_%:
-	echo "making $@"
+day_%: inputs/day_%.txt src/day_%.py
+	ptw --runner "pytest --testmon" --onfail "notify-send \"Failed\"" --onpass "notify-send \"Passed\"" src/*.py
