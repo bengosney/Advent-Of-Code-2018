@@ -26,9 +26,7 @@ def best(items: dict[T, Any]) -> T:
     return max(items, key=lambda i: items.get(i, None))
 
 
-def part_1(input: str) -> int:
-    lines = sorted(input.splitlines())
-
+def get_counts(lines: list[str]):
     shift_counts: dict[int, int] = defaultdict(int)
     minute_counts: dict[tuple[int, int], int] = defaultdict(int)
     current_guard = -1
@@ -47,6 +45,12 @@ def part_1(input: str) -> int:
                 shift_counts[current_guard] += 1
                 minute_counts[(current_guard, min)] += 1
 
+    return shift_counts, minute_counts
+
+
+def part_1(input: str) -> int:
+    shift_counts, minute_counts = get_counts(sorted(input.splitlines()))
+
     best_guard = best(shift_counts)
     best_minute = best({m: v for (g, m), v in minute_counts.items() if g == best_guard})
 
@@ -54,7 +58,10 @@ def part_1(input: str) -> int:
 
 
 def part_2(input: str) -> int:
-    pass
+    _, minute_counts = get_counts(sorted(input.splitlines()))
+
+    idx, minute = best(minute_counts)
+    return idx * minute
 
 
 # -- Tests
@@ -85,9 +92,9 @@ def test_part_1():
     assert part_1(test_input) == 240
 
 
-# def test_part_2():
-#     test_input = get_example_input()
-#     assert part_2(test_input) is not None
+def test_part_2():
+    test_input = get_example_input()
+    assert part_2(test_input) == 4455
 
 
 @no_input_skip
@@ -96,10 +103,10 @@ def test_part_1_real():
     assert part_1(real_input) == 21956
 
 
-# @no_input_skip
-# def test_part_2_real():
-#     real_input = read_input(__file__)
-#     assert part_2(real_input) is not None
+@no_input_skip
+def test_part_2_real():
+    real_input = read_input(__file__)
+    assert part_2(real_input) == 134511
 
 
 # -- Main
